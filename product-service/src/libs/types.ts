@@ -6,4 +6,4 @@ export interface IProduct {
   media: string;
 }
 
-export type ProductList = IProduct[];
+export type ProductsList = IProduct[];
