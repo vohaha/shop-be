@@ -7,6 +7,15 @@ export default {
       http: {
         method: 'get',
         path: 'products/{productId}',
+        responses: {
+          200: {
+            description: 'Returns product',
+            bodyType: 'IProduct',
+          },
+          404: {
+            description: 'Product not found',
+          },
+        },
       },
     },
   ],

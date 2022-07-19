@@ -1,5 +1,5 @@
 import productsListData from '../libs/products-list.json';
-import { ProductsList } from './types';
+import { ProductsList } from '../types/api-types';
 
 export const api = {
   async getProductsList() {

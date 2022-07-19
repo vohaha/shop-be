@@ -1,7 +1,8 @@
+import createEvent from '@serverless/event-mocks';
 import { Context } from 'aws-lambda';
 import { main } from './handler';
 import { api } from '../../libs/api';
-import { IProduct } from '../../libs/types';
+import { IProduct } from '../../types/api-types';
 
 describe('Unit test: getProductsById', () => {
   beforeEach(() => {
@@ -13,9 +14,9 @@ describe('Unit test: getProductsById', () => {
       .spyOn(api, 'getProductById')
       .mockResolvedValueOnce(null);
     const resp = await main(
-      {
+      createEvent('aws:apiGateway', {
         pathParameters: { productId: eventProductId },
-      },
+      } as any),
       {} as Context
     );
     expect(resp.statusCode).toBe(404);
@@ -33,13 +34,18 @@ describe('Unit test: getProductsById', () => {
       .spyOn(api, 'getProductById')
       .mockResolvedValueOnce(mockedProduct);
     const resp = await main(
-      {
+      createEvent('aws:apiGateway', {
         pathParameters: { productId: mockedProduct.id },
-      },
+      } as any),
       {} as Context
     );
-    expect(resp.statusCode).toBe(200);
-    expect(resp.body).toBe(JSON.stringify(mockedProduct));
+    expect(resp).toStrictEqual({
+      body: JSON.stringify(mockedProduct),
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
     expect(apiSpy).toHaveBeenCalledWith(mockedProduct.id);
   });
 });

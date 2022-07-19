@@ -1,7 +1,8 @@
 import { Context } from 'aws-lambda';
 import { main } from './handler';
 import { api } from '../../libs/api';
-import { ProductsList } from '../../libs/types';
+import { ProductsList } from '../../types/api-types';
+import createEvent from '@serverless/event-mocks';
 
 describe('Unit test: getProductsList', () => {
   beforeEach(() => {
@@ -9,7 +10,10 @@ describe('Unit test: getProductsList', () => {
   });
   it('should return 404 error', async () => {
     const apiSpy = jest.spyOn(api, 'getProductsList').mockResolvedValueOnce([]);
-    const resp = await main({}, {} as Context);
+    const resp = await main(
+      createEvent('aws:apiGateway', {} as any),
+      {} as Context
+    );
     expect(resp.statusCode).toBe(404);
     expect(apiSpy).toHaveBeenCalled();
   });
@@ -33,9 +37,17 @@ describe('Unit test: getProductsList', () => {
     const apiSpy = jest
       .spyOn(api, 'getProductsList')
       .mockResolvedValueOnce(mockedProductsList);
-    const resp = await main({}, {} as Context);
-    expect(resp.statusCode).toBe(200);
-    expect(resp.body).toBe(JSON.stringify(mockedProductsList));
+    const resp = await main(
+      createEvent('aws:apiGateway', {} as any),
+      {} as Context
+    );
+    expect(resp).toStrictEqual({
+      body: JSON.stringify(mockedProductsList),
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
     expect(apiSpy).toHaveBeenCalled();
   });
 });
