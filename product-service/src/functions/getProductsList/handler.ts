@@ -1,29 +1,15 @@
-import { formatJSONResponse } from '@libs/api-gateway';
-import { middyfy } from '@libs/lambda';
-import productsListData from '@libs/products-list.json';
-import { ProductsList } from '@libs/types';
+import { formatJSONResponse } from '../../libs/api-gateway';
+import { middyfy } from '../../libs/lambda';
 import { Handler } from 'aws-lambda';
+import { api } from '../../libs/api';
+import createError from 'http-errors';
 
-const getProductsList: Handler = async (event) => {
-  try {
-    const productsList = await new Promise<ProductsList>((resolve) => {
-      setTimeout(() => {
-        resolve(productsListData);
-      }, 100);
-    });
-    if (productsList != null) {
-      return formatJSONResponse(productsList);
-    }
-  } catch (err) {
-    return formatJSONResponse(
-      {
-        message: 'Internal error',
-        event,
-        err: JSON.stringify(err),
-      },
-      500
-    );
+const getProductsList: Handler = async () => {
+  const productsList = await api.getProductsList();
+  if (!productsList.length) {
+    throw new createError.NotFound();
   }
+  return formatJSONResponse(productsList);
 };
 
 export const main = middyfy(getProductsList);
