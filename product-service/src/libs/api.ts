@@ -1,4 +1,5 @@
 import { Client } from 'pg';
+import { IClientProduct, IProduct } from '../types/api-types';
 
 const { DB_HOST, DB_PORT, DB_NAME, DB_PASSWORD, DB_USER } = process.env;
 function getClient() {
@@ -15,7 +16,7 @@ function getClient() {
   });
 }
 
-async function openConnection(handler: (client: Client) => Promise<unknown>) {
+async function openConnection<T>(handler: (client: Client) => Promise<T>) {
   const client = getClient();
   try {
     await client.connect();
@@ -44,6 +45,32 @@ export const api = {
         [predicateProductId]
       );
       return product;
+    });
+  },
+  // TODO change types to avoid omitting id
+  async createProduct(product: Omit<IProduct, 'id'>) {
+    return await openConnection<IClientProduct>(async (client) => {
+      try {
+        await client.query('BEGIN');
+        const {
+          rows: [returnedProduct],
+        } = await client.query<IProduct>(
+          'INSERT INTO products (name, description, price, media) VALUES ($1, $2, $3, $4) RETURNING *',
+          [product.name, product.description, product.price, product.media]
+        );
+        const DEFAULT_COUNT = 0;
+        await client.query(
+          'INSERT INTO stocks (product_id, count) VALUES ($1, $2)',
+          [returnedProduct.id, DEFAULT_COUNT]
+        );
+        await client.query('COMMIT');
+        // TODO probably need to find a better way to return the ClientProduct
+        return { ...returnedProduct, count: DEFAULT_COUNT };
+      } catch (error) {
+        console.error(error);
+        await client.query('ROLLBACK');
+        throw error;
+      }
     });
   },
 };

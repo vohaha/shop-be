@@ -1,3 +1,5 @@
+export interface IProduct {}
+
 export interface IProduct {
   id: string;
   name: string;
@@ -14,5 +16,6 @@ export interface IStock {
 export type ProductsList = IProduct[];
 export type StocksList = IStock[];
 
-export type IClientProduct = IProduct & Omit<IStock, 'product_id'>;
+export interface IClientProduct extends IProduct, Omit<IStock, 'product_id'> {}
+
 export type IClientProductsList = IClientProduct[];

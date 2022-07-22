@@ -3,8 +3,9 @@ import { middyfy } from '../../libs/lambda';
 import { api } from '../../libs/api';
 import { Handler } from 'aws-lambda';
 import createError from 'http-errors';
+import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy';
 
-const getProductsById: Handler = async (event) => {
+const getProductsById: Handler<APIGatewayProxyEvent> = async (event) => {
   const predicateProductId = event.pathParameters.productId;
   const product = await api.getProductById(predicateProductId);
   if (product == null) {
