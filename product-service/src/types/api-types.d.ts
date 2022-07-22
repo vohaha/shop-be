@@ -6,4 +6,13 @@ export interface IProduct {
   media: string;
 }
 
+export interface IStock {
+  product_id: IProduct['id'];
+  count: number;
+}
+
 export type ProductsList = IProduct[];
+export type StocksList = IStock[];
+
+export type IClientProduct = IProduct & Omit<IStock, 'product_id'>;
+export type IClientProductsList = IClientProduct[];

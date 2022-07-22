@@ -10,7 +10,7 @@ export default {
         responses: {
           200: {
             description: 'Returns product',
-            bodyType: 'IProduct',
+            bodyType: 'IClientProduct',
           },
           404: {
             description: 'Product not found',
