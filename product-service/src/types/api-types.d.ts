@@ -1,11 +1,12 @@
-export interface IProduct {}
-
-export interface IProduct {
-  id: string;
+export interface IProductBase {
   name: string;
   description: string;
   price: number;
   media: string;
+}
+
+export interface IProduct extends IProductBase {
+  id: string;
 }
 
 export interface IStock {

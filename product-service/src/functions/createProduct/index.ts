@@ -7,26 +7,20 @@ export default {
       http: {
         method: 'post',
         path: 'product',
-        requestBody: {
-          description: 'The product to create',
-          required: true,
-          content: {
-            'application/json': {
-              schema: {
-                type: 'IProduct',
-              },
-            },
-          },
-        },
+        bodyType: 'IProductBase',
         responses: {
           201: {
             description: 'Returns product',
             bodyType: 'IClientProduct',
+          },
+          400: {
+            description: 'Bad request',
+          },
+          500: {
+            description: 'Internal server error',
           },
         },
       },
     },
   ],
 };
-
-// TODO add responses
