@@ -1,5 +1,6 @@
 import { Client } from 'pg';
 import { IClientProduct, IProduct } from '../types/api-types';
+import createError from 'http-errors';
 
 const { DB_HOST, DB_PORT, DB_NAME, DB_PASSWORD, DB_USER } = process.env;
 function getClient() {
@@ -23,7 +24,9 @@ async function openConnection<T>(handler: (client: Client) => Promise<T>) {
     return await handler(client);
   } catch (error) {
     console.error(error);
-    throw error;
+    const clientError = new createError.ServiceUnavailable();
+    clientError.expose = true;
+    throw clientError;
   } finally {
     await client.end();
   }
