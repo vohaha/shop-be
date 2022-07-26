@@ -6,6 +6,7 @@ import createError from 'http-errors';
 import { IClientProductsList } from '../../types/api-types';
 
 const getProductsList: Handler = async () => {
+  // TODO avoid explicit type casting
   const productsList = (await api.getProductsList()) as IClientProductsList;
   if (!productsList.length) {
     throw new createError.NotFound();

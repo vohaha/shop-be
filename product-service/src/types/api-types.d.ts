@@ -1,3 +1,5 @@
+// TODO as auto-swagger doesn't support complex types (extends, Omit, Pick,
+//  Union, etc.),we need to find a way to do this
 export interface IProductBase {
   name: string;
   description: string;

@@ -1,5 +1,5 @@
 import { Client } from 'pg';
-import { IClientProduct, IProduct } from '../types/api-types';
+import { IClientProduct, IProduct, IProductBase } from '../types/api-types'
 import createError from 'http-errors';
 
 const { DB_HOST, DB_PORT, DB_NAME, DB_PASSWORD, DB_USER } = process.env;
@@ -50,8 +50,7 @@ export const api = {
       return product;
     });
   },
-  // TODO change types to avoid omitting id
-  async createProduct(product: Omit<IProduct, 'id'>) {
+  async createProduct(product: IProductBase) {
     return await openConnection<IClientProduct>(async (client) => {
       try {
         await client.query('BEGIN');
@@ -67,7 +66,7 @@ export const api = {
           [returnedProduct.id, DEFAULT_COUNT]
         );
         await client.query('COMMIT');
-        // TODO probably need to find a better way to return the ClientProduct
+        // TODO probably we can find a better way to return the ClientProduct
         return { ...returnedProduct, count: DEFAULT_COUNT };
       } catch (error) {
         console.error(error);
