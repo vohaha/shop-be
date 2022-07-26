@@ -11,5 +11,5 @@ export const middyfy = (handler) => {
     .use(cors())
     .use(httpErrorHandler())
     .use(middyJsonBodyParser())
-    .use(inputOutputLogger());
+    .use(inputOutputLogger({ awsContext: true }));
 };
