@@ -1,5 +1,5 @@
 import { Client } from 'pg';
-import { IClientProduct, IProduct, IProductBase } from '../types/api-types'
+import { IClientProduct, IProduct, IProductBase } from '../types/api-types';
 import createError from 'http-errors';
 
 const { DB_HOST, DB_PORT, DB_NAME, DB_PASSWORD, DB_USER } = process.env;
@@ -32,7 +32,7 @@ async function openConnection<T>(handler: (client: Client) => Promise<T>) {
   }
 }
 
-export const api = {
+export const db = {
   async getProductsList() {
     return await openConnection(async (client) => {
       const { rows: productsList } = await client.query(

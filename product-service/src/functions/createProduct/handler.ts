@@ -1,6 +1,6 @@
 import { formatJSONResponse } from '../../libs/api-gateway';
 import { middyfy } from '../../libs/lambda';
-import { api } from '../../libs/api';
+import { db } from '../../libs/db';
 import { Handler } from 'aws-lambda';
 import createError from 'http-errors';
 import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy';
@@ -22,7 +22,7 @@ const createProduct: Handler<APIGatewayProxyEvent> = async (event) => {
   if (!isValidProduct(product)) {
     throw new createError.BadRequest();
   }
-  const returnedProduct = await api.createProduct(product);
+  const returnedProduct = await db.createProduct(product);
   return formatJSONResponse(returnedProduct, 201);
 };
 

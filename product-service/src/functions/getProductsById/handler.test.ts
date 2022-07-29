@@ -1,7 +1,7 @@
 import createEvent from '@serverless/event-mocks';
 import { Context } from 'aws-lambda';
 import { main } from './handler';
-import { api } from '../../libs/api';
+import { db } from '../../libs/db';
 import { IProduct } from '../../types/api-types';
 
 describe('Unit test: getProductsById', () => {
@@ -11,7 +11,7 @@ describe('Unit test: getProductsById', () => {
   it('should return 404 error', async () => {
     const eventProductId = 'not-existed-id';
     const apiSpy = jest
-      .spyOn(api, 'getProductById')
+      .spyOn(db, 'getProductById')
       .mockResolvedValueOnce(null);
     const resp = await main(
       createEvent('aws:apiGateway', {
@@ -31,7 +31,7 @@ describe('Unit test: getProductsById', () => {
       media: '',
     };
     const apiSpy = jest
-      .spyOn(api, 'getProductById')
+      .spyOn(db, 'getProductById')
       .mockResolvedValueOnce(mockedProduct);
     const resp = await main(
       createEvent('aws:apiGateway', {
