@@ -1,11 +1,13 @@
 import { formatJSONResponse } from '../../libs/api-gateway';
 import { middyfy } from '../../libs/lambda';
 import { Handler } from 'aws-lambda';
-import { api } from '../../libs/api';
+import { db } from '../../libs/db';
 import createError from 'http-errors';
+import { IClientProductsList } from '../../types/api-types';
 
 const getProductsList: Handler = async () => {
-  const productsList = await api.getProductsList();
+  // TODO avoid explicit type casting
+  const productsList = (await db.getProductsList()) as IClientProductsList;
   if (!productsList.length) {
     throw new createError.NotFound();
   }

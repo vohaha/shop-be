@@ -10,7 +10,7 @@ export default {
         responses: {
           200: {
             description: 'Returns a list of products',
-            bodyType: 'ProductsList',
+            bodyType: 'IClientProductsList',
           },
           404: {
             description: 'List of products is empty',

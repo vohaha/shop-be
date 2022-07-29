@@ -5,15 +5,19 @@ export default {
   events: [
     {
       http: {
-        method: 'get',
-        path: 'products/{productId}',
+        method: 'post',
+        path: 'product',
+        bodyType: 'IProductBase',
         responses: {
-          200: {
+          201: {
             description: 'Returns product',
             bodyType: 'IClientProduct',
           },
-          404: {
-            description: 'Product not found',
+          400: {
+            description: 'Bad request',
+          },
+          500: {
+            description: 'Internal server error',
           },
         },
       },

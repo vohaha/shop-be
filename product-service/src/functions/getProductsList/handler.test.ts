@@ -1,6 +1,6 @@
 import { Context } from 'aws-lambda';
 import { main } from './handler';
-import { api } from '../../libs/api';
+import { db } from '../../libs/db';
 import { ProductsList } from '../../types/api-types';
 import createEvent from '@serverless/event-mocks';
 
@@ -9,7 +9,7 @@ describe('Unit test: getProductsList', () => {
     jest.restoreAllMocks();
   });
   it('should return 404 error', async () => {
-    const apiSpy = jest.spyOn(api, 'getProductsList').mockResolvedValueOnce([]);
+    const apiSpy = jest.spyOn(db, 'getProductsList').mockResolvedValueOnce([]);
     const resp = await main(
       createEvent('aws:apiGateway', {} as any),
       {} as Context
@@ -35,7 +35,7 @@ describe('Unit test: getProductsList', () => {
       },
     ];
     const apiSpy = jest
-      .spyOn(api, 'getProductsList')
+      .spyOn(db, 'getProductsList')
       .mockResolvedValueOnce(mockedProductsList);
     const resp = await main(
       createEvent('aws:apiGateway', {} as any),
