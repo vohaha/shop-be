@@ -5,10 +5,17 @@ import httpEventNormalizer from '@middy/http-event-normalizer';
 import cors from '@middy/http-cors';
 import inputOutputLogger from '@middy/input-output-logger';
 
-export const middyfy = (handler) => {
+export const middyfyAPIGatewayProxy = (handler) => {
   return middy(handler)
     .use(httpEventNormalizer())
     .use(cors())
+    .use(httpErrorHandler())
+    .use(middyJsonBodyParser())
+    .use(inputOutputLogger({ awsContext: true }));
+};
+
+export const middyfySQS = (handler) => {
+  return middy(handler)
     .use(httpErrorHandler())
     .use(middyJsonBodyParser())
     .use(inputOutputLogger({ awsContext: true }));

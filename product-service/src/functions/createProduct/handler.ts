@@ -1,5 +1,5 @@
 import { formatJSONResponse } from '../../libs/api-gateway';
-import { middyfy } from '../../libs/lambda';
+import { middyfyAPIGatewayProxy } from '../../libs/lambda';
 import { db } from '../../libs/db';
 import { Handler } from 'aws-lambda';
 import createError from 'http-errors';
@@ -26,4 +26,4 @@ const createProduct: Handler<APIGatewayProxyEvent> = async (event) => {
   return formatJSONResponse(returnedProduct, 201);
 };
 
-export const main = middyfy(createProduct);
+export const main = middyfyAPIGatewayProxy(createProduct);
