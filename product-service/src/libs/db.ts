@@ -1,7 +1,6 @@
 import { Client } from 'pg';
 import { IClientProduct, IProductBase } from '../types/api-types';
 import createError from 'http-errors';
-import format from 'pg-format';
 
 const { DB_HOST, DB_PORT, DB_NAME, DB_PASSWORD, DB_USER } = process.env;
 function getClient() {
@@ -33,6 +32,23 @@ async function openConnection<T>(handler: (client: Client) => Promise<T>) {
   }
 }
 
+function nestedArraysQueryValue(flatValues, valueLength) {
+  let valueIndex = 0;
+  return flatValues
+    .reduce((acc, _, index) => {
+      if (index % valueLength === 0 && index !== 0) {
+        valueIndex++;
+      }
+      if (acc[valueIndex] == null) {
+        acc[valueIndex] = [];
+      }
+      acc[valueIndex].push(`$${index + 1}`);
+      return acc;
+    }, [])
+    .map((value) => `(${value.join(',')})`)
+    .join(', ');
+}
+
 export const db = {
   async getProductsList() {
     return await openConnection(async (client) => {
@@ -55,18 +71,26 @@ export const db = {
     return await openConnection<IClientProduct[]>(async (client) => {
       try {
         await client.query('BEGIN');
+        const productsValue = products.flatMap((product) => [
+          product.name,
+          product.description,
+          product.price,
+          product.media,
+        ]);
+        const productsQueryValues = nestedArraysQueryValue(productsValue, 4);
         const { rows: returnedProducts } = await client.query(
-          format(
-            'INSERT INTO products (name, description, price, media) VALUES %L RETURNING *',
-            products
-          )
+          `INSERT INTO products (name, description, price, media) VALUES ${productsQueryValues} RETURNING *`,
+          productsValue
         );
         const DEFAULT_COUNT = 0;
+        const stocksValue = returnedProducts.flatMap((product) => [
+          product.id,
+          DEFAULT_COUNT,
+        ]);
+        const stocksQueryValues = nestedArraysQueryValue(stocksValue, 2);
         await client.query(
-          format(
-            'INSERT INTO stocks (product_id, count) VALUES %L',
-            returnedProducts.map((product) => [product.id, DEFAULT_COUNT])
-          )
+          `INSERT INTO stocks (product_id, count) VALUES ${stocksQueryValues}`,
+          stocksValue
         );
         await client.query('COMMIT');
         return returnedProducts.map((product) => ({

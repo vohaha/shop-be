@@ -18,5 +18,10 @@ export const middyfySQS = (handler) => {
   return middy(handler)
     .use(httpErrorHandler())
     .use(middyJsonBodyParser())
-    .use(inputOutputLogger({ awsContext: true }));
+    .use(
+      inputOutputLogger({
+        awsContext: true,
+        logger: (message) => console.log(JSON.stringify(message)),
+      })
+    );
 };
