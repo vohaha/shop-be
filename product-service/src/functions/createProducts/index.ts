@@ -7,11 +7,11 @@ export default {
       http: {
         method: 'post',
         path: 'product',
-        bodyType: 'IProductBase',
+        bodyType: 'IProductBase[]',
         responses: {
           201: {
-            description: 'Returns product',
-            bodyType: 'IClientProduct',
+            description: 'Returns products',
+            bodyType: 'IClientProduct[]',
           },
           400: {
             description: 'Bad request',

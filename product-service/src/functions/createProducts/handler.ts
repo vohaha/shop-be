@@ -6,10 +6,16 @@ import createError from 'http-errors';
 import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy';
 import { IProduct } from '../../types/api-types';
 
-function isValidProduct(product: any): product is IProduct {
-  // TODO add proper validation
+// TODO add proper validation
+function isProductsValid(products: any): products is IProduct[] {
+  if (products == null) {
+    return false;
+  }
+  if (Array.isArray(products)) {
+    return products.every(isProductsValid);
+  }
+  const product = products;
   return (
-    product != null &&
     typeof product.name === 'string' &&
     typeof product.description === 'string' &&
     typeof product.price === 'number' &&
@@ -17,13 +23,13 @@ function isValidProduct(product: any): product is IProduct {
   );
 }
 
-const createProduct: Handler<APIGatewayProxyEvent> = async (event) => {
-  const product = event.body;
-  if (!isValidProduct(product)) {
+const createProducts: Handler<APIGatewayProxyEvent> = async (event) => {
+  const products = event.body;
+  if (!isProductsValid(products)) {
     throw new createError.BadRequest();
   }
-  const returnedProduct = await db.createProduct(product);
-  return formatJSONResponse(returnedProduct, 201);
+  const returnedProducts = await db.createProducts(products);
+  return formatJSONResponse(returnedProducts, 201);
 };
 
-export const main = middyfyAPIGatewayProxy(createProduct);
+export const main = middyfyAPIGatewayProxy(createProducts);

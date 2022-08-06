@@ -1,7 +1,7 @@
 import { Context } from 'aws-lambda';
 import { main } from './handler';
 import { db } from '../../libs/db';
-import { ProductsList } from '../../types/api-types';
+import { IProduct } from '../../types/api-types'
 import createEvent from '@serverless/event-mocks';
 
 describe('Unit test: getProductsList', () => {
@@ -18,7 +18,7 @@ describe('Unit test: getProductsList', () => {
     expect(apiSpy).toHaveBeenCalled();
   });
   it('should return 200', async () => {
-    const mockedProductsList: ProductsList = [
+    const mockedProductsList: IProduct[] = [
       {
         description: 'test description',
         id: 'existed-id',

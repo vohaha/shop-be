@@ -1,11 +1,11 @@
 import getProductsList from './getProductsList';
 import getProductsById from './getProductsById';
-import createProduct from './createProduct';
+import createProducts from './createProducts';
 import catalogBatchProcess from './catalogBatchProcess';
 
 export default {
   getProductsList,
   getProductsById,
-  createProduct,
+  createProducts,
   catalogBatchProcess,
 };
