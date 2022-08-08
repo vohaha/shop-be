@@ -16,9 +16,4 @@ export interface IStock {
   count: number;
 }
 
-export type ProductsList = IProduct[];
-export type StocksList = IStock[];
-
 export interface IClientProduct extends IProduct, Omit<IStock, 'product_id'> {}
-
-export type IClientProductsList = IClientProduct[];
