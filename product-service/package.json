@@ -4,7 +4,7 @@
   "description": "Serverless aws-nodejs-typescript template",
   "main": "serverless.ts",
   "scripts": {
-    "deploy": "sls deploy",
+    "deploy": "sls deploy --org=vohaha --app=aws-learning",
     "test": "jest --config=jest.config.ts",
     "test-watch": "jest --watch",
     "format": "prettier --write '**/*.{ts,js}'",
@@ -14,6 +14,7 @@
     "node": ">=14.15.0"
   },
   "dependencies": {
+    "@aws-sdk/client-sns": "^3.142.0",
     "@middy/core": "^2.5.3",
     "@middy/http-cors": "^3.1.0",
     "@middy/http-error-handler": "^3.1.0",

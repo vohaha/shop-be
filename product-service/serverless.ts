@@ -21,11 +21,29 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
+      PRODUCT_CREATED_TOPIC_ARN: {
+        Ref: 'ProductCreatedTopic',
+      },
     },
+    iamRoleStatements: [
+      {
+        Effect: 'Allow',
+        Action: ['sqs:*'],
+        Resource: '${self:custom.catalogItemsQueueArn}',
+      },
+      {
+        Effect: 'Allow',
+        Action: ['sns:*'],
+        Resource: {
+          Ref: 'ProductCreatedTopic',
+        },
+      },
+    ],
   },
   // import the function via paths
   functions,
   package: { individually: true },
+  useDotenv: true,
   custom: {
     autoswagger: {},
     esbuild: {
@@ -38,6 +56,9 @@ const serverlessConfiguration: AWS = {
       platform: 'node',
       concurrency: 10,
     },
+    catalogItemsQueueArn: {
+      'Fn::GetAtt': ['CatalogItemsQueue', 'Arn'],
+    },
   },
   resources: {
     Resources: {
@@ -47,41 +68,31 @@ const serverlessConfiguration: AWS = {
           QueueName: 'catalogItemsQueue',
         },
       },
-      SQSCatalogItemsRole: {
-        Type: 'AWS::IAM::Role',
+      ProductCreatedTopic: {
+        Type: 'AWS::SNS::Topic',
         Properties: {
-          AssumeRolePolicyDocument: {
-            Version: '2012-10-17',
-            Statement: [
-              {
-                Effect: 'Allow',
-                Principal: {
-                  Service: 'lambda.amazonaws.com',
-                },
-                Action: ['sts:AssumeRole'],
-              },
-            ],
-          },
-          Policies: [
+          TopicName: 'ProductCreatedTopicName',
+          Subscription: [
             {
-              PolicyName: 'SQSCatalogItemsPolicy',
-              PolicyDocument: {
-                Version: '2012-10-17',
-                Statement: [
-                  {
-                    Effect: 'Allow',
-                    Action: ['sqs:*', 'logs:*'],
-                    Resource: '*',
-                  },
-                ],
-              },
+              Endpoint: '${self:custom.catalogItemsQueueArn}',
+              Protocol: 'sqs',
             },
           ],
         },
       },
+      ProductCreatedTopicSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: '${env:ADMIN_EMAIL}',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'ProductCreatedTopic',
+          },
+        },
+      },
     },
     Outputs: {
-      SQSUrl: {
+      CatalogItemsQueueUrl: {
         Value: {
           Ref: 'CatalogItemsQueue',
         },
@@ -89,10 +100,8 @@ const serverlessConfiguration: AWS = {
           Name: 'product-service-sqs-url',
         },
       },
-      SQSArn: {
-        Value: {
-          'Fn::GetAtt': ['CatalogItemsQueue', 'Arn'],
-        },
+      CatalogItemsQueueArn: {
+        Value: '${self:custom.catalogItemsQueueArn}',
         Export: {
           Name: 'product-service-sqs-arn',
         },
