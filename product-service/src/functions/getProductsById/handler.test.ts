@@ -10,9 +10,7 @@ describe('Unit test: getProductsById', () => {
   });
   it('should return 404 error', async () => {
     const eventProductId = 'not-existed-id';
-    const apiSpy = jest
-      .spyOn(db, 'getProductById')
-      .mockResolvedValueOnce(null);
+    const apiSpy = jest.spyOn(db, 'getProductById').mockResolvedValueOnce(null);
     const resp = await main(
       createEvent('aws:apiGateway', {
         pathParameters: { productId: eventProductId },
@@ -32,7 +30,7 @@ describe('Unit test: getProductsById', () => {
     };
     const apiSpy = jest
       .spyOn(db, 'getProductById')
-      .mockResolvedValueOnce(mockedProduct);
+      .mockResolvedValueOnce([mockedProduct]);
     const resp = await main(
       createEvent('aws:apiGateway', {
         pathParameters: { productId: mockedProduct.id },
@@ -40,7 +38,7 @@ describe('Unit test: getProductsById', () => {
       {} as Context
     );
     expect(resp).toStrictEqual({
-      body: JSON.stringify(mockedProduct),
+      body: JSON.stringify([mockedProduct]),
       statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
