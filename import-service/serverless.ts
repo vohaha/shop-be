@@ -41,6 +41,23 @@ const serverlessConfiguration: AWS = {
   },
   resources: {
     Resources: {
+      ApiGatewayRestApi: {
+        Type: "AWS::ApiGateway::RestApi",
+      },
+      GatewayResponse: {
+        Type: "AWS::ApiGateway::GatewayResponse",
+        Properties: {
+          ResponseParameters: {
+            "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+            "gatewayresponse.header.Access-Control-Allow-Headers": "'*'",
+          },
+          StatusCode: "403",
+          ResponseType: "ACCESS_DENIED",
+          RestApiId: {
+            Ref: "ApiGatewayRestApi",
+          },
+        },
+      },
       ImportFilesBucket: {
         Type: "AWS::S3::Bucket",
         Properties: {
